@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./css/index.css" />
+  <title>记事本</title>
+</head>
+
+<body>
+
+  <!-- 主体区域 -->
+  <section id="app">
+    <!-- 输入框 -->
+    <header class="header">
+      <h1>小黑记事本</h1>
+      <input placeholder="请输入任务" class="new-todo" v-model="inputEvent" />
+      <button class="add" v-on:click="addEvent()">添加任务</button>
+    </header>
+    <!-- 列表区域 -->
+    <section class="main">
+      <ul class="todo-list">
+        <li class="todo" v-for="(item,index) in eventList" :key="item.id">
+          <div class="view">
+            <span class="index">{{index+1}}.</span>
+            <label>{{item.event}} </label>
+            <button class="destroy" @click="deleteEvent(item.id)"></button>
+          </div>
+        </li>
+      </ul>
+    </section>
+    <!-- 统计和清空 -->
+    <footer v-show="eventList.length > 0" class="footer">
+      <!-- 统计 -->
+      <span class="todo-count">合 计:<strong> {{eventList.length}} </strong></span>
+      <!-- 清空 -->
+      <button class="clear-completed" @click="clearEvents()">
+        清空任务
+      </button>
+    </footer>
+  </section>
+
+  <!-- 底部 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+
+    const app = new Vue({
+      el: '#app',
+      data: {
+        eventList: [
+          {
+            id: 1,
+            event: "跑步锻炼20分钟"
+          },
+          {
+            id: 2,
+            event: "跑步锻炼20分钟"
+          },
+          {
+            id: 3,
+            event: "复习代码20分钟"
+          },
+          {
+            id: 4,
+            event: "跑步锻炼20分钟"
+          },
+          {
+            id: 5,
+            event: "跑步锻炼20分钟"
+          }
+        ],
+        inputEvent: "",
+        idCount: 6
+      },
+      methods: {
+        // vue中methods定义不需要关键词function
+        // eg: function addEcent(){}   错误
+        addEvent() {
+          if (this.inputEvent.trim()) {
+            this.eventList.unshift(
+              {
+                id: this.idCount++,
+                event: this.inputEvent
+              })
+            // console.log(this.idCount)
+            this.inputEvent = ""
+          }
+        },
+        deleteEvent(id) {
+          this.eventList = this.eventList.filter(item => {
+            return item.id !== id
+          })
+        },
+        clearEvents() {
+          this.eventList = [];
+        }
+      }
+    })
+
+  </script>
+</body>
+
+</html>
