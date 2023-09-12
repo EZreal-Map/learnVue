@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./css/inputnumber.css" />
+  <link rel="stylesheet" href="./css/index.css" />
+  <title>购物车</title>
+</head>
+
+<body>
+  <div class="app-container" id="app">
+    <!-- 顶部banner -->
+    <div class="banner-box"><img src="http://autumnfish.cn/static/fruit.jpg" alt="" /></div>
+    <!-- 面包屑 -->
+    <div class="breadcrumb">
+      <span>🏠</span>
+      /
+      <span>购物车</span>
+    </div>
+    <!-- 购物车主体 -->
+    <div class="main">
+      <div class="table">
+        <!-- 头部 -->
+        <div class="thead">
+          <div class="tr">
+            <div class="th">选中</div>
+            <div class="th th-pic">图片</div>
+            <div class="th">单价</div>
+            <div class="th num-th">个数</div>
+            <div class="th">小计</div>
+            <div class="th">操作</div>
+          </div>
+        </div>
+        <!-- 身体 -->
+        <div class="tbody">
+          <div class="tr" :class="{active:item.isChecked}" v-for="(item,index) in fruitList" :key="item.id">
+            <div class="td"><input v-model="item.isChecked" @click="checked(index)" type="checkbox" /></div>
+            <div class="td"><img :src="item.icon" alt="" /></div>
+            <div class="td">{{item.price}}</div>
+            <div class="td">
+              <div class="my-input-number">
+                <button class="decrease" @click="minus(index)"> - </button>
+                <span class="my-input__inner">{{item.num}}</span>
+                <button class="increase" @click="add(index)"> + </button>
+              </div>
+            </div>
+            <div class="td">{{item.num * item.price}}</div>
+            <div class="td"><button @click="remove(index)">删除</button></div>
+          </div>
+        </div>
+      </div>
+      <!-- 底部 -->
+      <div class="bottom">
+        <!-- 全选 -->
+        <label class="check-all">
+          <input @click="select" type="checkbox" :checked="isChecked" />
+          全选
+        </label>
+        <div class="right-box">
+          <!-- 所有商品总价 -->
+          <span class="price-box">总价&nbsp;&nbsp;:&nbsp;&nbsp;¥&nbsp;<span class="price">{{sum}}</span></span>
+          <!-- 结算按钮 -->
+          <button class="pay">结算( {{sumCount}} )</button>
+        </div>
+      </div>
+    </div>
+    <!-- 空车 -->
+    <div class="empty" v-show="fruitList.length === 0">🛒空空如也</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        // 水果列表
+        fruitList: [
+          {
+            id: 1,
+            icon: 'http://autumnfish.cn/static/火龙果.png',
+            isChecked: true,
+            num: 2,
+            price: 6,
+          },
+          {
+            id: 2,
+            icon: 'http://autumnfish.cn/static/荔枝.png',
+            isChecked: false,
+            num: 7,
+            price: 20,
+          },
+          {
+            id: 3,
+            icon: 'http://autumnfish.cn/static/榴莲.png',
+            isChecked: false,
+            num: 3,
+            price: 40,
+          },
+          {
+            id: 4,
+            icon: 'http://autumnfish.cn/static/鸭梨.png',
+            isChecked: true,
+            num: 10,
+            price: 3,
+          },
+          {
+            id: 5,
+            icon: 'http://autumnfish.cn/static/樱桃.png',
+            isChecked: false,
+            num: 20,
+            price: 34,
+          },
+        ],
+        sumCount: 0,
+        isChecked: false
+      },
+      methods: {
+        minus(index) {
+          if (this.fruitList[index].num > 0) {
+            this.fruitList[index].num -= 1;
+          }
+        },
+        add(index) {
+          this.fruitList[index].num += 1;
+        },
+        checked(index) {
+          this.fruitList[index].isChecked = !this.fruitList[index].isChecked;
+        },
+        remove(index) {
+          this.fruitList.splice(index, 1)
+        },
+        select(e) {
+          // console.log(e.target.checked)
+          this.fruitList.map(item => {
+            item.isChecked = e.target.checked;
+          })
+        }
+      },
+      watch: {
+        fruitList: {
+          deep: true,
+          immediate: true,
+          handler() {
+            this.sumCount = 0
+            this.sum = this.fruitList.reduce((accumulate, currentItem) => {
+              if (currentItem.isChecked) { this.sumCount += 1 }
+              return accumulate += currentItem.num * currentItem.price * (currentItem.isChecked ? 1 : 0)
+            }, 0)
+          }
+        },
+        sumCount(newValue) {
+          if (newValue === this.fruitList.length) {
+            this.isChecked = true
+          } else {
+            this.isChecked = false
+          }
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
